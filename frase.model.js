@@ -3,8 +3,8 @@ var Schema = mongoose.Schema;
 
 var Schema_frase = new Schema(
     {
-      quote  : String,
-      author : String,
+      autor  : String,
+      frase : String,
     },
     { versionKey: false, collection: 'frases'  }
 );

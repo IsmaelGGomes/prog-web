@@ -1,8 +1,12 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const Frase = require('./frase.model');
 app.use(express.json());
 
+
+// Conexão banco de dados
+const db_host = 'localhost';
 const port = 8080
 const db_port = 27017;
 const db_db   = 'frases';   
@@ -15,40 +19,58 @@ app.get('/', (req, res) => {
 })
 
 app.get('/frases', (req, res) => {
-    //
+    Frase.find({})
+        .then((frases) => {
+            res.send(frases);
+        })
+        .catch((err) => {
+            res.status(500).send();
+        })
 })
 
 app.post('/frases', (req, res) => {
-    //console.log(req.body);
-    //res.send('pronto')
-    frases.push(req.body)
-    res.status(201).send()
+    var frase = {
+        autor: req.body.autor,
+        frase: req.body.frase
+    }
+    Frase.create(frase)
+        .then((f)=> {
+            // res.status(201).send()
+            res.status(201).send(f)
+        }).catch(()=> {
+            res.status(500).send()
+        })
+
+    
 })
 
 app.delete('/frases/:id', (req, res) => {
     var id = req.params.id
-    var index = frases.findIndex((frase) => frase.id == id)
-    // response -1 quer dizer que não foi encontrado
-    if (index == -1) {
-        res.status(404).send()
-    } else {
-        frases.splice(index, 1)
-        res.status(200).send()
-    }
+    Frase.findByIdAndDelete(id)
+        .then(()=> {
+            res.status(200).send();
+        }).catch(()=> {
+            res.status(404).send();
+        })
 })
 
 app.put('/frases/:id', (req, res) => {
     var id = req.params.id
-    var frase = req.body
-    var index = frases.findIndex((frase) => frase.id == id)
+    var f = req.body
     
-    if (index == -1) {
-        res.status(404).send()
-    } else {
-        frases[index].autor = frase.autor
-        frases[index].frase = frase.frase
-        res.status(200).send()
-    }
+    Frase.findById(id)
+        .then((frase)=> {
+            frase.autor = f.autor;
+            frase.frase = f.frase;
+            frase.save().then(()=> {
+                res.status(200).send();
+            }).catch(()=> {
+                res.status(500).send();
+            })
+        }).catch((err)=> {
+            console.log(err);
+            res.status(500).send();
+        })
 })
 
 app.listen(port, (err) => {
