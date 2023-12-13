@@ -28,20 +28,30 @@ app.get('/frases', (req, res) => {
         })
 })
 
-app.post('/frases', (req, res) => {
-    var frase = {
-        autor: req.body.autor,
-        frase: req.body.frase
-    }
-    Frase.create(frase)
+app.post('/frases', async (req, res) => {
+    // var frase = {
+    //     autor: req.body.autor,
+    //     frase: req.body.frase
+    // }
+    // Frase.create(frase)
+    //     .then((f)=> {
+    //         // res.status(201).send()
+    //         res.status(201).send(f)
+    //     }).catch(()=> {
+    //         res.status(500).send()
+    //     })
+    const data = await req.body
+
+    data.forEach((data) => {
+        Frase.create((data)
         .then((f)=> {
             // res.status(201).send()
             res.status(201).send(f)
         }).catch(()=> {
             res.status(500).send()
         })
-
-    
+        )
+    })
 })
 
 app.delete('/frases/:id', (req, res) => {
